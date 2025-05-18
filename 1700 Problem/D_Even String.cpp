@@ -1,0 +1,153 @@
+// Problem Link - https://codeforces.com/problemset/problem/2086/D
+
+// SOlution
+
+
+
+/* rsingh2003 */
+
+// Don't look at my code Bitch !!!
+
+#include <bits/stdc++.h>
+using namespace std;
+
+
+// pbds
+#include<ext/pb_ds/assoc_container.hpp>
+#include<ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+
+template<class T>using oset = tree<T, null_type, less <T>, rb_tree_tag, tree_order_statistics_node_update>; // order_of_key  find_by_order
+
+#define int long long
+
+/*********************************************************************************************************/
+
+#ifndef ONLINE_JUDGE
+#define debug(x) cerr << #x <<" "; _print(x); cerr << endl;
+#else
+#define debug(x)
+#endif
+void _print(int t) {cerr << t;}
+void _print(long double t) {cerr << t;}
+void _print(string t) {cerr << t;}
+void _print(char t) {cerr << t;}
+void _print(double t) {cerr << t;}
+template <class T, class V> void _print(pair <T, V> p) {cerr << "{"; _print(p.first); cerr << ","; _print(p.second); cerr << "}";}
+template <class T> void _print(vector <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
+template <class T> void _print(set <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
+template <class T> void _print(multiset <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
+template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i : v) {_print(i); cerr << " ";} cerr << "]";}
+
+/*********************************************************************************************************/
+
+// I know it's hard, that's why I'm doing this. 
+
+
+
+class Factorial{
+public:
+    vector<int>fac;
+    int mod;
+public:
+    Factorial(int n, int m)
+    {
+        mod = m;
+        fac.resize(n+1);
+        fac[0] = 1;
+        for(int i = 1; i <= n; i++)
+            fac[i] = ((i%mod)*(fac[i-1]%mod))%mod;
+    }
+
+    int binpow(int a, int b)
+    {
+        if(b == 0)
+            return 1;
+        int res = binpow(a,b/2);
+        if(b&1)
+            return (((a*res)%mod)*(res))%mod;
+        else
+            return (res*res)%mod;
+    }
+
+    int inverse(int den)
+    {
+        return binpow(den,mod-2)%mod;
+    }
+    int ncr(int n, int r)
+    {
+        int nom = fac[n];
+        int den = (fac[n-r]*fac[r])%mod;
+        int denI = inverse(den);
+        return (nom*denI)%mod;
+    }
+    int npr(int n, int r)
+    {
+        int nom = fac[n];
+        int den = fac[n-r];
+        int denI = inverse(den);
+        return (nom*denI)%mod;
+    }
+};
+
+const int mod = 998244353;
+
+void rahul()
+{
+    vector<int>v(26);
+    for(int i = 0; i < 26; i++)
+        cin >> v[i];
+    int tot = 0;
+    for(int i = 0; i < 26; i++)
+        tot += v[i];
+    int odd = ceil(tot*1.0/2);
+    int even = floor(tot*1.0/2);
+    Factorial obj(tot,mod);
+    vector<vector<int>>dp(27, vector<int>(odd+1,0));
+    for(int i = 0; i<= 26; i++)
+        dp[i][0] = 1;
+    for(int i =1 ; i <= 26; i++)
+    {
+        for(int j = 1; j <= odd; j++)
+        {
+            if(v[i-1] == 0)
+                dp[i][j] = dp[i-1][j]%mod;
+            else if(j >= v[i-1])
+                dp[i][j] = (dp[i-1][j-v[i-1]] + dp[i-1][j])%mod;
+            else
+                dp[i][j] = dp[i-1][j]%mod;
+        }
+    }
+    int rah = dp[26][odd];
+    debug(rah)
+    int ab = ((obj.fac[odd])*(obj.fac[even]))%mod;
+    int bc = 1;
+    for(int i = 0; i < 26; i++)
+    {
+        if(v[i] != 0)
+            bc = (bc*(obj.fac[v[i]]))%mod;
+    }
+    int cd = obj.inverse(bc);
+    int ef = (ab*cd)%mod;
+    int gh = (dp[26][odd]*ef)%mod;
+    cout << gh << '\n';
+}
+
+
+int32_t main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout << fixed << setprecision(6);
+    int t = 1;
+    cin >> t;
+    while (t--)
+    {
+        rahul();
+    }
+    return 0;
+}
+
+
+
+
